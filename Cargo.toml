@@ -1,0 +1,60 @@
+[package]
+name = "portal"
+version = "0.1.0"
+edition = "2021"
+authors = ["J Wylie Cullick <wylie@terebinth.is>"]
+
+[dependencies]
+console_error_panic_hook = "0.1.7"
+gloo-console = "0.2.1"
+js-sys = "0.3.58"
+serde = { version = "1.0", features = ["derive"] }
+wasm-bindgen = { version = "0.2.81", features = ["serde-serialize"] }
+yew = { version = "0.19.3" }
+yew-agent = { version = "0.1.0" }
+yew-router = "0.16"
+wasm-sockets = "0.2.2"
+wasm-bindgen-futures = "0.4.31"
+futures = "0.3.21"
+wasm-logger = "0.2.0"
+cgmath = "0.18.0"
+
+lazy_static = "1.4.0"
+
+log = "0.4.17"
+console_log = "0.2.0"
+serde_json = "1.0.81"
+gloo-net = "0.2.2"
+reqwasm = "0.5.0"
+wee_alloc = "0.4.5"
+
+[dependencies.web-sys]
+version = "0.3.58"
+features = [
+  'AngleInstancedArrays',
+  'Blob',
+  'BlobPropertyBag',
+  'DedicatedWorkerGlobalScope',
+  'Document',
+  'Event',
+  'EventTarget',
+  'HtmlElement',
+  'HtmlCanvasElement',
+  'KeyboardEvent',
+  'Location',
+  'MessageEvent',
+  'MouseEventInit',
+  'Url',
+  'WebGlTransformFeedback',
+  'WebGlBuffer',
+  'WebGlProgram',
+  'WebGl2RenderingContext',
+  'WebGlShader',
+  'WebGlUniformLocation',
+  'WebGlVertexArrayObject',
+  'Window',
+  'Worker',
+]
+
+[toolchain]
+channel = "nightly"
