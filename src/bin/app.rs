@@ -89,7 +89,10 @@ fn main()
 
     let mut expl_switch = Arc::new(Mutex::new(AtomicBool::new(true)));
 
-    gl.clear_color(0.98, 0.983, 0.992, 1.0);
+    gl.clear_color(0.03, 0.003, 0.002, 1.0);
+
+    gl.enable(GL::DEPTH_TEST);
+
 
     let render_loop_closure = Rc::new(RefCell::new(None));
     let alias_rlc = render_loop_closure.clone();

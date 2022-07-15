@@ -9,9 +9,10 @@ uniform float u_time;
 out vec4 FragColor;
 
 void main() {
-    float r = sin(u_time * 0.0003);
-    float g = sin(u_time * 0.0005);
-    float b = sin(u_time * 0.0007);
+    float r = sin(u_time * 0.9003);
+    float g = sin(u_time * 0.9005);
+    float b = sin(u_time * 0.9007);
 
+    // FragColor = vec4(0.999, 0.999, 0.888, 1.0);
     FragColor = vec4(r, g, b, 1.0);
 }

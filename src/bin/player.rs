@@ -58,7 +58,7 @@ pub fn draw_player_one
     gl.use_program(Some(&shader_program));
     gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
     gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
-    gl.vertex_attrib_pointer_with_i32(**vertices_position, 2, GL::FLOAT, false, 0, 0);
+    gl.vertex_attrib_pointer_with_i32(**vertices_position, 3, GL::FLOAT, false, 0, 0);
     gl.enable_vertex_attrib_array(**vertices_position);
     gl.uniform1f(Some(&time_loc), 0.4 as f32);
     let new_pos_dx = game_state.lock().unwrap().player_one.lock().unwrap().position_dx;
@@ -66,7 +66,8 @@ pub fn draw_player_one
     gl.uniform2f(Some(&pos_deltas_loc), new_pos_dx, new_pos_dy);    
     let new_vifo_theta = game_state.lock().unwrap().player_one.lock().unwrap().vifo_theta;
     gl.uniform1f(Some(&vifo_theta_loc), new_vifo_theta.0);
-    gl.draw_arrays(GL::TRIANGLES, 0, 6);
+    // gl.draw_arrays(GL::TRIANGLES, 0, 6);
+    gl.draw_arrays(GL::TRIANGLES, 0, 36);
     gl.bind_buffer(GL::ARRAY_BUFFER, None);
 }
 
@@ -88,7 +89,7 @@ pub fn draw_player_two
     gl.use_program(Some(&shader_program));
     gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
     gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
-    gl.vertex_attrib_pointer_with_i32(**vertices_position, 2, GL::FLOAT, false, 0, 0);
+    gl.vertex_attrib_pointer_with_i32(**vertices_position, 3, GL::FLOAT, false, 0, 0);
     gl.enable_vertex_attrib_array(**vertices_position);
     gl.uniform1f(Some(&time_loc), 0.4 as f32);
     let new_pos_dx = game_state.lock().unwrap().player_two.lock().unwrap().position_dx;
@@ -96,7 +97,7 @@ pub fn draw_player_two
     gl.uniform2f(Some(&pos_deltas_loc), new_pos_dx, new_pos_dy);    
     let new_vifo_theta = game_state.lock().unwrap().player_two.lock().unwrap().vifo_theta;
     gl.uniform1f(Some(&vifo_theta_loc), new_vifo_theta.0);
-    gl.draw_arrays(GL::TRIANGLES, 0, 6);
+    gl.draw_arrays(GL::TRIANGLES, 0, 36);
     gl.bind_buffer(GL::ARRAY_BUFFER, None);
 }
 
@@ -113,7 +114,27 @@ pub fn setup_prepare_player_draw
         -0.008, 0.008,
     ];
 
-    let vert_code = include_str!("../shaders/vehicle_100.vert");
+
+    let vehicle_200_vertices: Vec<f32> = vec![
+        0.021, 0.0, 0.0,
+         -0.008, -0.008, 0.0,
+        -0.008, 0.008, 0.0, // that's the base triangle of the pseudo-tetrahedron. 
+
+        0.021, 0.0, 0.0,
+        -0.008, 0.008, 0.0,
+        -0.005, 0.0, 0.005,
+
+        0.021, 0.0, 0.0,
+        -0.008, -0.008, 0.0,
+        -0.005, 0.0, 0.005,
+
+        -0.008, -0.008, 0.0,
+        -0.008, 0.008, 0.0,
+        -0.005, 0.0, 0.005,
+    ];
+
+    // let vert_code = include_str!("../shaders/vehicle_100.vert");
+    let vert_code = include_str!("../shaders/vehicle_200.vert");
     let vert_shader = gl.create_shader(GL::VERTEX_SHADER).unwrap();
     gl.shader_source(&vert_shader, vert_code);
     gl.compile_shader(&vert_shader);
@@ -135,7 +156,8 @@ pub fn setup_prepare_player_draw
     let time_loc = Arc::new(gl.get_uniform_location(&shader_program, "u_time").unwrap());
 
     let vertex_buffer = Arc::new(gl.create_buffer().unwrap());
-    let js_vertices = Arc::new(js_sys::Float32Array::from(vehicle_100_vertices.as_slice()));
+    // let js_vertices = Arc::new(js_sys::Float32Array::from(vehicle_100_vertices.as_slice()));
+    let js_vertices = Arc::new(js_sys::Float32Array::from(vehicle_200_vertices.as_slice()));
     let pos_deltas_loc = Arc::new(gl.get_uniform_location(&shader_program, "pos_deltas").unwrap());
     let vifo_theta_loc =  Arc::new(gl.get_uniform_location(&shader_program, "vifo_theta").unwrap());
     let vertices_position = Arc::new((gl.get_attrib_location(&shader_program, "a_position") as u32));

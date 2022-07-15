@@ -55,7 +55,7 @@ pub fn draw_torps
     gl.use_program(Some(&shader_program));
     gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
     gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
-    gl.vertex_attrib_pointer_with_i32(**vertices_position, 2, GL::FLOAT, false, 0, 0);
+    gl.vertex_attrib_pointer_with_i32(**vertices_position, 3, GL::FLOAT, false, 0, 0);
     gl.enable_vertex_attrib_array(**vertices_position);
 
     gl.use_program(Some(&shader_program));
@@ -85,7 +85,26 @@ pub fn setup_prepare_torp_draw
         -0.0038, 0.0038, 
     ];
 
-    let vert_code = include_str!("../shaders/torpedo_100.vert");
+    let torpedo_200_vertices: Vec<f32> = vec![
+        0.007, 0.0, 0.0,
+        -0.0038, -0.0038, 0.0, 
+        -0.0038, 0.0038, 0.0,
+
+        0.007, 0.0, 0.0,
+        -0.0038, -0.0038, 0.0, 
+        -0.003, 0.0, 0.003,
+
+        0.007, 0.0, 0.0,
+        -0.0038, -0.0038, 0.0, 
+        -0.003, 0.0, 0.003,
+
+        -0.0038, -0.0038, 0.0,
+        -0.0038, 0.0038, 0.0, 
+        -0.003, 0.0, 0.003,
+
+    ];
+
+    let vert_code = include_str!("../shaders/torpedo_200.vert");
     let vert_shader = gl.create_shader(GL::VERTEX_SHADER).unwrap();
     gl.shader_source(&vert_shader, vert_code);
     gl.compile_shader(&vert_shader);
@@ -107,7 +126,7 @@ pub fn setup_prepare_torp_draw
     let time_loc = Arc::new(gl.get_uniform_location(&shader_program, "u_time").unwrap());
 
     let vertex_buffer = Arc::new(gl.create_buffer().unwrap());
-    let js_vertices = Arc::new(js_sys::Float32Array::from(torpedo_100_vertices.as_slice()));
+    let js_vertices = Arc::new(js_sys::Float32Array::from(torpedo_200_vertices.as_slice()));
     let pos_deltas_loc = Arc::new(gl.get_uniform_location(&shader_program, "pos_deltas").unwrap());
     let vifo_theta_loc =  Arc::new(gl.get_uniform_location(&shader_program, "vifo_theta").unwrap());
     let vertices_position = Arc::new((gl.get_attrib_location(&shader_program, "b_position") as u32));
