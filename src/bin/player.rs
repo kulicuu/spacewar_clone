@@ -133,6 +133,60 @@ pub fn setup_prepare_player_draw
         -0.005, 0.0, 0.005,
     ];
 
+    let v1 = cgmath::Vector3::new(vehicle_200_vertices[0], vehicle_200_vertices[1], vehicle_200_vertices[2]);
+    let v2 = cgmath::Vector3::new(vehicle_200_vertices[3], vehicle_200_vertices[4], vehicle_200_vertices[5]);
+    let v3 = cgmath::Vector3::new(vehicle_200_vertices[6], vehicle_200_vertices[7], vehicle_200_vertices[8]);
+
+    let u1 = v1 - v2;
+    let u2 = v3 - v2;
+
+    let face_1_normal = u1.cross(u2);
+
+    let v1 = cgmath::Vector3::new(vehicle_200_vertices[9], vehicle_200_vertices[10], vehicle_200_vertices[11]);
+    let v2 = cgmath::Vector3::new(vehicle_200_vertices[12], vehicle_200_vertices[13], vehicle_200_vertices[14]);
+    let v3 = cgmath::Vector3::new(vehicle_200_vertices[15], vehicle_200_vertices[16], vehicle_200_vertices[17]);
+
+    let u1 = v1 - v2;
+    let u2 = v3 - v2;
+
+    let face_2_normal = u1.cross(u2);
+
+    let v1 = cgmath::Vector3::new(vehicle_200_vertices[18], vehicle_200_vertices[19], vehicle_200_vertices[20]);
+    let v2 = cgmath::Vector3::new(vehicle_200_vertices[21], vehicle_200_vertices[22], vehicle_200_vertices[23]);
+    let v3 = cgmath::Vector3::new(vehicle_200_vertices[24], vehicle_200_vertices[25], vehicle_200_vertices[26]);
+
+    let u1 = v1 - v2;
+    let u2 = v3 - v2;
+
+    let face_3_normal = u1.cross(u2);
+
+    let v1 = cgmath::Vector3::new(vehicle_200_vertices[27], vehicle_200_vertices[28], vehicle_200_vertices[29]);
+    let v2 = cgmath::Vector3::new(vehicle_200_vertices[30], vehicle_200_vertices[31], vehicle_200_vertices[32]);
+    let v3 = cgmath::Vector3::new(vehicle_200_vertices[33], vehicle_200_vertices[34], vehicle_200_vertices[35]);
+
+    let u1 = v1 - v2;
+    let u2 = v3 - v2;
+
+    let face_4_normal = u1.cross(u2);
+
+    let v200_vertex_normals = vec![
+        face_1_normal[0], face_1_normal[1], face_1_normal[2],
+        face_1_normal[0], face_1_normal[1], face_1_normal[2],
+        face_1_normal[0], face_1_normal[1], face_1_normal[2],
+
+        face_2_normal[0], face_2_normal[1], face_2_normal[2],
+        face_2_normal[0], face_2_normal[1], face_2_normal[2],
+        face_2_normal[0], face_2_normal[1], face_2_normal[2],
+
+        face_3_normal[0], face_3_normal[1], face_3_normal[2],
+        face_3_normal[0], face_3_normal[1], face_3_normal[2],
+        face_3_normal[0], face_3_normal[1], face_3_normal[2],
+
+        face_4_normal[0], face_4_normal[1], face_4_normal[2],
+        face_4_normal[0], face_4_normal[1], face_4_normal[2],
+        face_4_normal[0], face_4_normal[1], face_4_normal[2],
+    ];
+
     // let vert_code = include_str!("../shaders/vehicle_100.vert");
     let vert_code = include_str!("../shaders/vehicle_200.vert");
     let vert_shader = gl.create_shader(GL::VERTEX_SHADER).unwrap();
@@ -161,6 +215,9 @@ pub fn setup_prepare_player_draw
     let pos_deltas_loc = Arc::new(gl.get_uniform_location(&shader_program, "pos_deltas").unwrap());
     let vifo_theta_loc =  Arc::new(gl.get_uniform_location(&shader_program, "vifo_theta").unwrap());
     let vertices_position = Arc::new((gl.get_attrib_location(&shader_program, "a_position") as u32));
+
+    let normals_buffer = Arc::new(gl.create_buffer().unwrap());
+    let norms_js = Arc::new(js_sys::Float32Array::from(v200_vertex_normals.as_slice()));
     
     Ok(
         Arc::new(
@@ -168,6 +225,8 @@ pub fn setup_prepare_player_draw
                 shader_program: shader_program,
                 vertex_buffer: vertex_buffer,
                 js_vertices: js_vertices,
+                normals_buffer: normals_buffer,
+                norms_js: norms_js,
                 vertices_position: vertices_position,
                 pos_deltas_loc: pos_deltas_loc,
                 vifo_theta_loc: vifo_theta_loc,

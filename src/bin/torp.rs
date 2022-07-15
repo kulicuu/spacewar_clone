@@ -101,8 +101,68 @@ pub fn setup_prepare_torp_draw
         -0.0038, -0.0038, 0.0,
         -0.0038, 0.0038, 0.0, 
         -0.003, 0.0, 0.003,
-
     ];
+
+    let v1 = cgmath::Vector3::new(torpedo_200_vertices[0], torpedo_200_vertices[1], torpedo_200_vertices[2]);
+    let v2 = cgmath::Vector3::new(torpedo_200_vertices[3], torpedo_200_vertices[4], torpedo_200_vertices[5]);
+    let v3 = cgmath::Vector3::new(torpedo_200_vertices[6], torpedo_200_vertices[7], torpedo_200_vertices[8]);
+
+    let u1 = v1 - v2;
+    let u2 = v3 - v2;
+
+    let face_1_normal = u1.cross(u2);
+
+    let v1 = cgmath::Vector3::new(torpedo_200_vertices[9], torpedo_200_vertices[10], torpedo_200_vertices[11]);
+    let v2 = cgmath::Vector3::new(torpedo_200_vertices[12], torpedo_200_vertices[13], torpedo_200_vertices[14]);
+    let v3 = cgmath::Vector3::new(torpedo_200_vertices[15], torpedo_200_vertices[16], torpedo_200_vertices[17]);
+
+    let u1 = v1 - v2;
+    let u2 = v3 - v2;
+
+    let face_2_normal = u1.cross(u2);
+
+    let v1 = cgmath::Vector3::new(torpedo_200_vertices[18], torpedo_200_vertices[19], torpedo_200_vertices[20]);
+    let v2 = cgmath::Vector3::new(torpedo_200_vertices[21], torpedo_200_vertices[22], torpedo_200_vertices[23]);
+    let v3 = cgmath::Vector3::new(torpedo_200_vertices[24], torpedo_200_vertices[25], torpedo_200_vertices[26]);
+
+    let u1 = v1 - v2;
+    let u2 = v3 - v2;
+
+    let face_3_normal = u1.cross(u2);
+
+    let v1 = cgmath::Vector3::new(torpedo_200_vertices[27], torpedo_200_vertices[28], torpedo_200_vertices[29]);
+    let v2 = cgmath::Vector3::new(torpedo_200_vertices[30], torpedo_200_vertices[31], torpedo_200_vertices[32]);
+    let v3 = cgmath::Vector3::new(torpedo_200_vertices[33], torpedo_200_vertices[34], torpedo_200_vertices[35]);
+
+    let u1 = v1 - v2;
+    let u2 = v3 - v2;
+
+    let face_4_normal = u1.cross(u2);
+
+    let t200_vertex_normals = vec![
+        face_1_normal,
+        face_1_normal,
+        face_1_normal,
+
+        face_2_normal,
+        face_2_normal,
+        face_2_normal,
+
+        face_3_normal,
+        face_3_normal,
+        face_3_normal,
+
+        face_4_normal,
+        face_4_normal,
+        face_4_normal,
+    ];
+
+
+    // let vertex_normals: Vec<f32> = vec![
+    //     0.0, 0.0, -1.0,
+
+    // ]
+
 
     let vert_code = include_str!("../shaders/torpedo_200.vert");
     let vert_shader = gl.create_shader(GL::VERTEX_SHADER).unwrap();
