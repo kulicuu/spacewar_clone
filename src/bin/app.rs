@@ -106,8 +106,6 @@ fn main()
 
         game_state::update_game_state(frame_delta, game.clone());
 
-
-
         let tkp1 = *(game.lock().unwrap().torp_kills_player_1.lock().unwrap());
         if tkp1.0 {
 

@@ -38,7 +38,7 @@ void main() {
 
     gl_Position = translated;
 
-    gl_Position = translated;
+    // gl_Position = translated;
 
 
     // gl_Position = vec4(p_3[0] + pos_deltas[0], p_3[1] + pos_deltas[1], 0.0, 1.0);
