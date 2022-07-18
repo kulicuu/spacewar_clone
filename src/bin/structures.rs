@@ -108,11 +108,13 @@ pub struct PlayerDrawStuff { // Stuff for drawing. Todo: better naming.
     pub normals_buffer: Arc<WebGlBuffer>,
     pub norms_js: Arc<js_sys::Float32Array>, // player_js_vertices,
     pub vertex_normals_position: Arc<i32>,
+
+    pub norm_uniform_mat4: Arc<Mutex<cgmath::Matrix4<f32>>>,
     
-    pub norm_mat_loc: Arc<WebGlUniformLocation>,
-    pub pos_deltas_loc: Arc<WebGlUniformLocation>, //player_pos_deltas_loc
-    pub vifo_theta_loc: Arc<WebGlUniformLocation>, //player_vifo_theta_loc
-    pub time_loc: Arc::<WebGlUniformLocation>, // time_location
+    // pub norm_mat_loc: Arc<WebGlUniformLocation>,
+    // pub pos_deltas_loc: Arc<WebGlUniformLocation>, //player_pos_deltas_loc
+    // pub vifo_theta_loc: Arc<WebGlUniformLocation>, //player_vifo_theta_loc
+    // pub time_loc: Arc::<WebGlUniformLocation>, // time_location
 }
 
 pub struct TorpDrawStuff { 

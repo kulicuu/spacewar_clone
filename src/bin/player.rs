@@ -34,10 +34,6 @@ const HALF : f32 = SCALE / 2.0;
 const STEP : f32 = SCALE / RESOLUTION;
 const NUM_PARTICLES : u32 = 9680;
 
-
-pub fn draw_player() {}
-
-
 pub fn draw_player_one
 (
     gl: Arc<GL>,
@@ -45,8 +41,8 @@ pub fn draw_player_one
     player_draw_stuff: Arc<PlayerDrawStuff>,
 )
 {
-
     let shader_program = &player_draw_stuff.shader_program;
+    gl.use_program(Some(&shader_program));
 
     let vertex_buffer = &player_draw_stuff.vertex_buffer;
     let js_vertices = &player_draw_stuff.js_vertices;
@@ -56,59 +52,81 @@ pub fn draw_player_one
     let norms_js: &Arc<js_sys::Float32Array> = &player_draw_stuff.norms_js;
     let vertex_normals_position: &Arc<i32> = &player_draw_stuff.vertex_normals_position;
     
-    let norm_mat_loc = &player_draw_stuff.norm_mat_loc;
-    let vifo_theta_loc = &player_draw_stuff.vifo_theta_loc;
-    let pos_deltas_loc = &player_draw_stuff.pos_deltas_loc;
-    let time_loc = &player_draw_stuff.time_loc;
-    
 
-    gl.use_program(Some(&shader_program));
+    let norm_uniform_mat4 = &player_draw_stuff.norm_uniform_mat4;
 
 
 
 
 
-    // these shouldn't be done per draw.
-    // gl.bind_buffer(GL::ARRAY_BUFFER, Some(&normals_buffer));
-    // gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &norms_js, GL::STATIC_DRAW);
-    // gl.vertex_attrib_pointer_with_i32(**vertex_normals_position as u32, 3, GL::FLOAT, false, 0, 0);
-    // gl.enable_vertex_attrib_array(**vertex_normals_position as u32);
-    // gl.bind_buffer(GL::ARRAY_BUFFER, None);
-
-    // gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
-    // gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
-    // gl.vertex_attrib_pointer_with_i32(**vertices_position as u32, 3, GL::FLOAT, false, 0, 0);
-    // gl.enable_vertex_attrib_array(**vertices_position as u32);
-    // gl.bind_buffer(GL::ARRAY_BUFFER, None);
-
-
-    let eye: cgmath::Point3<f32> = cgmath::Point3::new(0.5, 0.5, 0.5);
-    let center: cgmath::Point3<f32> = cgmath::Point3::new(0.0, 0.0, 0.0);
-    let up: cgmath::Vector3<f32> = cgmath::Vector3::new(0.0, 0.0, 1.0);
-    let m100: cgmath::Matrix4<f32> = cgmath::Matrix4::look_at_rh(eye, center, up);
 
 
 
-
-    // log!("vertex_normals_poisition: ", **vertex_normals_position);
-    // log!("vertices position", **vertices_position);
-
-
-    // gl.uniform_matrix4fv_with_f32_sequence(
-    //     &Some(&norm_mat_loc),
-        
-    // );
+    // let norm_mat_loc = &player_draw_stuff.norm_mat_loc;
+    // let vifo_theta_loc = &player_draw_stuff.vifo_theta_loc;
+    // let pos_deltas_loc = &player_draw_stuff.pos_deltas_loc;
+    // let time_loc = &player_draw_stuff.time_loc;
+    // gl.uniform1f(Some(&time_loc), 0.4 as f32);
 
 
-    gl.uniform1f(Some(&time_loc), 0.4 as f32);
     let new_pos_dx = game_state.lock().unwrap().player_one.lock().unwrap().position_dx;
     let new_pos_dy = game_state.lock().unwrap().player_one.lock().unwrap().position_dy;
-    gl.uniform2f(Some(&pos_deltas_loc), new_pos_dx, new_pos_dy);    
     let new_vifo_theta = game_state.lock().unwrap().player_one.lock().unwrap().vifo_theta;
-    gl.uniform1f(Some(&vifo_theta_loc), new_vifo_theta.0);
+
+
+    let mut arr: [f32; 40] = [0.0; 40];
+    let mat4 = *norm_uniform_mat4.lock().unwrap();
+
+    arr[1] = new_pos_dx;
+    log!("arreee 1", arr[1]);
+    arr[2] = new_pos_dy;
+
+    arr[0] = new_vifo_theta.0;
+
+    let stuff_uniform_buffer = gl.create_buffer();
+    gl.bind_buffer_base(GL::UNIFORM_BUFFER, 0, stuff_uniform_buffer.as_ref());
+    let arr_js = js_sys::Float32Array::from(arr.as_slice());
+    gl.buffer_data_with_array_buffer_view(GL::UNIFORM_BUFFER, &arr_js, GL::STATIC_DRAW);
+
+
+
+    
+    // gl.uniform2f(Some(&pos_deltas_loc), new_pos_dx, new_pos_dy);    
+    // gl.uniform1f(Some(&vifo_theta_loc), new_vifo_theta.0);
+    
     // gl.draw_arrays(GL::TRIANGLES, 0, 6);
     gl.draw_arrays(GL::TRIANGLES, 0, 36);
     gl.bind_buffer(GL::ARRAY_BUFFER, None);
+}
+
+fn mat_to_arr
+<'a>
+(
+    arr: &'a mut [f32; 40],
+    mat4: &cgmath::Matrix4<f32>,
+)
+-> &'a mut [f32; 40]
+{
+    // let mut arr: [f32; 16] = [0.0; 16];
+    // for i in 0..4 {
+    //     for j in 0..4 {
+    //         arr[i + j] = mat4[i][j];
+    //     }
+    // }
+
+    arr[20] = mat4[0][0];
+    log!("arr[0]", arr[20]);
+    arr[21] = mat4[0][1];
+    log!("mat 0 1", arr[21]);
+    arr[22] = mat4[0][2];
+    arr[23] = mat4[0][3];
+    arr[24] = mat4[1][0];
+    arr[25] = mat4[1][1];
+    arr[26] = mat4[1][2];
+    arr[27] = mat4[1][3];
+
+
+    arr
 }
 
 pub fn draw_player_two
@@ -122,21 +140,21 @@ pub fn draw_player_two
     let vertex_buffer = &player_draw_stuff.vertex_buffer;
     let js_vertices = &player_draw_stuff.js_vertices;
     let vertices_position = &player_draw_stuff.vertices_position;
-    let vifo_theta_loc = &player_draw_stuff.vifo_theta_loc;
-    let pos_deltas_loc = &player_draw_stuff.pos_deltas_loc;
-    let time_loc = &player_draw_stuff.time_loc;
+    // let vifo_theta_loc = &player_draw_stuff.vifo_theta_loc;
+    // let pos_deltas_loc = &player_draw_stuff.pos_deltas_loc;
+    // let time_loc = &player_draw_stuff.time_loc;
     
     gl.use_program(Some(&shader_program));
     gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
     gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
     gl.vertex_attrib_pointer_with_i32(**vertices_position as u32, 3, GL::FLOAT, false, 0, 0);
     gl.enable_vertex_attrib_array(**vertices_position as u32);
-    gl.uniform1f(Some(&time_loc), 0.4 as f32);
-    let new_pos_dx = game_state.lock().unwrap().player_two.lock().unwrap().position_dx;
-    let new_pos_dy = game_state.lock().unwrap().player_two.lock().unwrap().position_dy;
-    gl.uniform2f(Some(&pos_deltas_loc), new_pos_dx, new_pos_dy);    
-    let new_vifo_theta = game_state.lock().unwrap().player_two.lock().unwrap().vifo_theta;
-    gl.uniform1f(Some(&vifo_theta_loc), new_vifo_theta.0);
+    // gl.uniform1f(Some(&time_loc), 0.4 as f32);
+    // let new_pos_dx = game_state.lock().unwrap().player_two.lock().unwrap().position_dx;
+    // let new_pos_dy = game_state.lock().unwrap().player_two.lock().unwrap().position_dy;
+    // gl.uniform2f(Some(&pos_deltas_loc), new_pos_dx, new_pos_dy);    
+    // let new_vifo_theta = game_state.lock().unwrap().player_two.lock().unwrap().vifo_theta;
+    // gl.uniform1f(Some(&vifo_theta_loc), new_vifo_theta.0);
     gl.draw_arrays(GL::TRIANGLES, 0, 36);
     gl.bind_buffer(GL::ARRAY_BUFFER, None);
 }
@@ -228,7 +246,7 @@ pub fn setup_prepare_player_draw
     ];
 
     // let vert_code = include_str!("../shaders/vehicle_100.vert");
-    let vert_code = include_str!("../shaders/vehicle_200.vert");
+    let vert_code = include_str!("../shaders/vehicle_300.vert");
     let vert_shader = gl.create_shader(GL::VERTEX_SHADER).unwrap();
     gl.shader_source(&vert_shader, vert_code);
     gl.compile_shader(&vert_shader);
@@ -254,14 +272,37 @@ pub fn setup_prepare_player_draw
     let norms_js = Arc::new(js_sys::Float32Array::from(v200_vertex_normals.as_slice()));
     let vertex_normals_position = Arc::new(gl.get_attrib_location(&shader_program, "a_normal") as i32);
 
+
+    let eye: cgmath::Point3<f32> = cgmath::Point3::new(0.5, 0.5, 0.5);
+    let center: cgmath::Point3<f32> = cgmath::Point3::new(0.0, 0.0, 0.0);
+    let up: cgmath::Vector3<f32> = cgmath::Vector3::new(0.0, 0.0, 1.0);
+    
+    let m200: cgmath::Matrix4<f32> = cgmath::Matrix4::look_at_rh(eye, center, up);
+    
+    let m100: Arc<Mutex<cgmath::Matrix4<f32>>> = Arc::new(Mutex::new(m200));
+
+    let mut arr_uni: [f32; 40] = [0.0; 40];
+    
+    // let x33 = mat_to_arr(&mut arr_uni, &m200);
+
+    // let arr_uni_js = js_sys::Float32Array::from(x33.as_slice());
+
+
+    // let arr100 = mat_to_arr(*m100.lock().unwrap());
+    // let m100_js = js_sys::Float32Array::from(arr100.as_slice());
+    
+
+
+
+
     let vertex_buffer = Arc::new(gl.create_buffer().unwrap());
     // let js_vertices = Arc::new(js_sys::Float32Array::from(vehicle_100_vertices.as_slice()));
     let js_vertices = Arc::new(js_sys::Float32Array::from(vehicle_200_vertices.as_slice()));
     let vertices_position = Arc::new(gl.get_attrib_location(&shader_program, "a_position") as i32);
 
-    let norm_mat_loc = Arc::new(gl.get_uniform_location(&shader_program, "norm_mat").unwrap());
-    let pos_deltas_loc = Arc::new(gl.get_uniform_location(&shader_program, "pos_deltas").unwrap());
-    let vifo_theta_loc =  Arc::new(gl.get_uniform_location(&shader_program, "vifo_theta").unwrap());
+    // let norm_mat_loc = Arc::new(gl.get_uniform_location(&shader_program, "norm_mat").unwrap());
+    // let pos_deltas_loc = Arc::new(gl.get_uniform_location(&shader_program, "pos_deltas").unwrap());
+    // let vifo_theta_loc =  Arc::new(gl.get_uniform_location(&shader_program, "vifo_theta").unwrap());
 
 
     gl.bind_buffer(GL::ARRAY_BUFFER, Some(&normals_buffer));
@@ -290,11 +331,19 @@ pub fn setup_prepare_player_draw
                 norms_js: norms_js,
                 vertex_normals_position: vertex_normals_position,
 
-                norm_mat_loc: norm_mat_loc,
-                pos_deltas_loc: pos_deltas_loc,
-                vifo_theta_loc: vifo_theta_loc,
-                time_loc: time_loc
+                norm_uniform_mat4: m100,
+
+                // norm_mat_loc: norm_mat_loc,
+                // pos_deltas_loc: pos_deltas_loc,
+                // vifo_theta_loc: vifo_theta_loc,
+                // time_loc: time_loc
             }
         )
     )
 }
+
+// fn readout_cgmath_matrix
+// (arr: [f32; 40])
+// {
+    
+// }
