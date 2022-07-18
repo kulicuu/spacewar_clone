@@ -50,7 +50,6 @@ pub fn draw_player_one
     let new_pos_dy = game_state.lock().unwrap().player_one.lock().unwrap().position_dy;
     let new_vifo_theta = game_state.lock().unwrap().player_one.lock().unwrap().vifo_theta;
 
-
     let mut arr: [f32; 40] = [0.0; 40];
     let mat4 = *norm_uniform_mat4.lock().unwrap();
 
@@ -60,8 +59,15 @@ pub fn draw_player_one
 
     arr[0] = new_vifo_theta.0;
 
-    let stuff_uniform_buffer = gl.create_buffer();
-    gl.bind_buffer_base(GL::UNIFORM_BUFFER, 0, stuff_uniform_buffer.as_ref());
+
+
+    arr[10] = mat4[0][0];
+    arr[11] = mat4[0][1];
+    arr[12] = mat4[0][2];
+    arr[13] = mat4[0][3];
+
+    
+    gl.bind_buffer_base(GL::UNIFORM_BUFFER, 0, Some(&player_draw_stuff.stuff_uniform_buffer.as_ref()));
     let arr_js = js_sys::Float32Array::from(arr.as_slice());
     gl.buffer_data_with_array_buffer_view(GL::UNIFORM_BUFFER, &arr_js, GL::STATIC_DRAW);
 
@@ -114,24 +120,43 @@ pub fn draw_player_two
 )
 {
     let shader_program = &player_draw_stuff.shader_program;
-    let vertex_buffer = &player_draw_stuff.vertex_buffer;
-    let js_vertices = &player_draw_stuff.js_vertices;
-    let vertices_position = &player_draw_stuff.vertices_position;
-    // let vifo_theta_loc = &player_draw_stuff.vifo_theta_loc;
-    // let pos_deltas_loc = &player_draw_stuff.pos_deltas_loc;
-    // let time_loc = &player_draw_stuff.time_loc;
-    
     gl.use_program(Some(&shader_program));
-    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
-    gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
-    gl.vertex_attrib_pointer_with_i32(**vertices_position as u32, 3, GL::FLOAT, false, 0, 0);
-    gl.enable_vertex_attrib_array(**vertices_position as u32);
-    // gl.uniform1f(Some(&time_loc), 0.4 as f32);
-    // let new_pos_dx = game_state.lock().unwrap().player_two.lock().unwrap().position_dx;
-    // let new_pos_dy = game_state.lock().unwrap().player_two.lock().unwrap().position_dy;
-    // gl.uniform2f(Some(&pos_deltas_loc), new_pos_dx, new_pos_dy);    
-    // let new_vifo_theta = game_state.lock().unwrap().player_two.lock().unwrap().vifo_theta;
-    // gl.uniform1f(Some(&vifo_theta_loc), new_vifo_theta.0);
+
+    let norm_uniform_mat4 = &player_draw_stuff.norm_uniform_mat4;
+
+    let new_pos_dx = game_state.lock().unwrap().player_two.lock().unwrap().position_dx;
+    let new_pos_dy = game_state.lock().unwrap().player_two.lock().unwrap().position_dy;
+    let new_vifo_theta = game_state.lock().unwrap().player_two.lock().unwrap().vifo_theta;
+
+
+    let mut arr: [f32; 40] = [0.0; 40];
+    let mat4 = *norm_uniform_mat4.lock().unwrap();
+
+    arr[2] = new_pos_dx;
+    // log!("arreee 1", arr[1]);
+    arr[3] = new_pos_dy;
+
+    arr[0] = new_vifo_theta.0;
+
+
+
+    arr[10] = mat4[0][0];
+    arr[11] = mat4[0][1];
+    arr[12] = mat4[0][2];
+    arr[13] = mat4[0][3];
+
+    
+    gl.bind_buffer_base(GL::UNIFORM_BUFFER, 0, Some(&player_draw_stuff.stuff_uniform_buffer.as_ref()));
+    let arr_js = js_sys::Float32Array::from(arr.as_slice());
+    gl.buffer_data_with_array_buffer_view(GL::UNIFORM_BUFFER, &arr_js, GL::STATIC_DRAW);
+    // let mut arr: [f32; 40] = [0.0; 40];
+    // lat mat4 = *norm_uniform_mat4.lock().unwrap();
+
+    // arr[2] = new_pos_dx;
+    // arr[3] = new_pos_dy;
+
+    // arr[0] = new_vifo_theta.0;
+
     gl.draw_arrays(GL::TRIANGLES, 0, 36);
     gl.bind_buffer(GL::ARRAY_BUFFER, None);
 }
@@ -269,7 +294,8 @@ pub fn setup_prepare_player_draw
     // let m100_js = js_sys::Float32Array::from(arr100.as_slice());
     
 
-
+    let stuff_uniform_buffer = gl.create_buffer().unwrap();
+    let arced_stuff = Arc::new(stuff_uniform_buffer);
 
 
     let vertex_buffer = Arc::new(gl.create_buffer().unwrap());
@@ -309,6 +335,8 @@ pub fn setup_prepare_player_draw
                 vertex_normals_position: vertex_normals_position,
 
                 norm_uniform_mat4: m100,
+
+                stuff_uniform_buffer: arced_stuff,
 
                 // norm_mat_loc: norm_mat_loc,
                 // pos_deltas_loc: pos_deltas_loc,

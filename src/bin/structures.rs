@@ -109,7 +109,11 @@ pub struct PlayerDrawStuff { // Stuff for drawing. Todo: better naming.
     pub norms_js: Arc<js_sys::Float32Array>, // player_js_vertices,
     pub vertex_normals_position: Arc<i32>,
 
+
+
     pub norm_uniform_mat4: Arc<Mutex<cgmath::Matrix4<f32>>>,
+
+    pub stuff_uniform_buffer: Arc<WebGlBuffer>,
     
     // pub norm_mat_loc: Arc<WebGlUniformLocation>,
     // pub pos_deltas_loc: Arc<WebGlUniformLocation>, //player_pos_deltas_loc
