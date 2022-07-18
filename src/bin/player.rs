@@ -44,30 +44,7 @@ pub fn draw_player_one
     let shader_program = &player_draw_stuff.shader_program;
     gl.use_program(Some(&shader_program));
 
-    let vertex_buffer = &player_draw_stuff.vertex_buffer;
-    let js_vertices = &player_draw_stuff.js_vertices;
-    let vertices_position = &player_draw_stuff.vertices_position;
-   
-    let normals_buffer: &Arc<WebGlBuffer> = &player_draw_stuff.normals_buffer;
-    let norms_js: &Arc<js_sys::Float32Array> = &player_draw_stuff.norms_js;
-    let vertex_normals_position: &Arc<i32> = &player_draw_stuff.vertex_normals_position;
-    
-
     let norm_uniform_mat4 = &player_draw_stuff.norm_uniform_mat4;
-
-
-
-
-
-
-
-
-    // let norm_mat_loc = &player_draw_stuff.norm_mat_loc;
-    // let vifo_theta_loc = &player_draw_stuff.vifo_theta_loc;
-    // let pos_deltas_loc = &player_draw_stuff.pos_deltas_loc;
-    // let time_loc = &player_draw_stuff.time_loc;
-    // gl.uniform1f(Some(&time_loc), 0.4 as f32);
-
 
     let new_pos_dx = game_state.lock().unwrap().player_one.lock().unwrap().position_dx;
     let new_pos_dy = game_state.lock().unwrap().player_one.lock().unwrap().position_dy;
@@ -77,9 +54,9 @@ pub fn draw_player_one
     let mut arr: [f32; 40] = [0.0; 40];
     let mat4 = *norm_uniform_mat4.lock().unwrap();
 
-    arr[1] = new_pos_dx;
-    log!("arreee 1", arr[1]);
-    arr[2] = new_pos_dy;
+    arr[2] = new_pos_dx;
+    // log!("arreee 1", arr[1]);
+    arr[3] = new_pos_dy;
 
     arr[0] = new_vifo_theta.0;
 
