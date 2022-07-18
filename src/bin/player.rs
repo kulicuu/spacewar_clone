@@ -56,6 +56,7 @@ pub fn draw_player_one
     let norms_js: &Arc<js_sys::Float32Array> = &player_draw_stuff.norms_js;
     let vertex_normals_position: &Arc<i32> = &player_draw_stuff.vertex_normals_position;
     
+    let norm_mat_loc = &player_draw_stuff.norm_mat_loc;
     let vifo_theta_loc = &player_draw_stuff.vifo_theta_loc;
     let pos_deltas_loc = &player_draw_stuff.pos_deltas_loc;
     let time_loc = &player_draw_stuff.time_loc;
@@ -63,20 +64,40 @@ pub fn draw_player_one
 
     gl.use_program(Some(&shader_program));
 
-    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&normals_buffer));
-    gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &norms_js, GL::STATIC_DRAW);
-    gl.vertex_attrib_pointer_with_i32(**vertex_normals_position as u32, 3, GL::FLOAT, false, 0, 0);
-    gl.enable_vertex_attrib_array(**vertex_normals_position as u32);
-    gl.bind_buffer(GL::ARRAY_BUFFER, None);
 
-    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
-    gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
-    gl.vertex_attrib_pointer_with_i32(**vertices_position as u32, 3, GL::FLOAT, false, 0, 0);
-    gl.enable_vertex_attrib_array(**vertices_position as u32);
-    gl.bind_buffer(GL::ARRAY_BUFFER, None);
+
+
+
+    // these shouldn't be done per draw.
+    // gl.bind_buffer(GL::ARRAY_BUFFER, Some(&normals_buffer));
+    // gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &norms_js, GL::STATIC_DRAW);
+    // gl.vertex_attrib_pointer_with_i32(**vertex_normals_position as u32, 3, GL::FLOAT, false, 0, 0);
+    // gl.enable_vertex_attrib_array(**vertex_normals_position as u32);
+    // gl.bind_buffer(GL::ARRAY_BUFFER, None);
+
+    // gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
+    // gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
+    // gl.vertex_attrib_pointer_with_i32(**vertices_position as u32, 3, GL::FLOAT, false, 0, 0);
+    // gl.enable_vertex_attrib_array(**vertices_position as u32);
+    // gl.bind_buffer(GL::ARRAY_BUFFER, None);
+
+
+    let eye: cgmath::Point3<f32> = cgmath::Point3::new(0.5, 0.5, 0.5);
+    let center: cgmath::Point3<f32> = cgmath::Point3::new(0.0, 0.0, 0.0);
+    let up: cgmath::Vector3<f32> = cgmath::Vector3::new(0.0, 0.0, 1.0);
+    let m100: cgmath::Matrix4<f32> = cgmath::Matrix4::look_at_rh(eye, center, up);
+
+
+
 
     // log!("vertex_normals_poisition: ", **vertex_normals_position);
     // log!("vertices position", **vertices_position);
+
+
+    // gl.uniform_matrix4fv_with_f32_sequence(
+    //     &Some(&norm_mat_loc),
+        
+    // );
 
 
     gl.uniform1f(Some(&time_loc), 0.4 as f32);
@@ -214,7 +235,8 @@ pub fn setup_prepare_player_draw
     let vert_shader_log = gl.get_shader_info_log(&vert_shader);
     log!("player vert shader log: ", vert_shader_log);
     
-    let frag_code = include_str!("../shaders/basic.frag");
+    // let frag_code = include_str!("../shaders/basic.frag");
+    let frag_code = include_str!("../shaders/vehicle_200.frag");
     let frag_shader = gl.create_shader(GL::FRAGMENT_SHADER).unwrap();
     gl.shader_source(&frag_shader, frag_code);
     gl.compile_shader(&frag_shader);
@@ -228,7 +250,6 @@ pub fn setup_prepare_player_draw
     
     let time_loc = Arc::new(gl.get_uniform_location(&shader_program, "u_time").unwrap());
 
-
     let normals_buffer = Arc::new(gl.create_buffer().unwrap());
     let norms_js = Arc::new(js_sys::Float32Array::from(v200_vertex_normals.as_slice()));
     let vertex_normals_position = Arc::new(gl.get_attrib_location(&shader_program, "a_normal") as i32);
@@ -238,10 +259,23 @@ pub fn setup_prepare_player_draw
     let js_vertices = Arc::new(js_sys::Float32Array::from(vehicle_200_vertices.as_slice()));
     let vertices_position = Arc::new(gl.get_attrib_location(&shader_program, "a_position") as i32);
 
-
-
+    let norm_mat_loc = Arc::new(gl.get_uniform_location(&shader_program, "norm_mat").unwrap());
     let pos_deltas_loc = Arc::new(gl.get_uniform_location(&shader_program, "pos_deltas").unwrap());
     let vifo_theta_loc =  Arc::new(gl.get_uniform_location(&shader_program, "vifo_theta").unwrap());
+
+
+    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&normals_buffer));
+    gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &norms_js, GL::STATIC_DRAW);
+    gl.vertex_attrib_pointer_with_i32(*vertex_normals_position as u32, 3, GL::FLOAT, false, 0, 0);
+    gl.enable_vertex_attrib_array(*vertex_normals_position as u32);
+    gl.bind_buffer(GL::ARRAY_BUFFER, None);
+
+    gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
+    gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
+    gl.vertex_attrib_pointer_with_i32(*vertices_position as u32, 3, GL::FLOAT, false, 0, 0);
+    gl.enable_vertex_attrib_array(*vertices_position as u32);
+    gl.bind_buffer(GL::ARRAY_BUFFER, None);
+
 
     Ok(
         Arc::new(
@@ -256,6 +290,7 @@ pub fn setup_prepare_player_draw
                 norms_js: norms_js,
                 vertex_normals_position: vertex_normals_position,
 
+                norm_mat_loc: norm_mat_loc,
                 pos_deltas_loc: pos_deltas_loc,
                 vifo_theta_loc: vifo_theta_loc,
                 time_loc: time_loc

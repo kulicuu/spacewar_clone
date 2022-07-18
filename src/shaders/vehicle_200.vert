@@ -8,6 +8,9 @@ in vec3 a_position;
 uniform vec2 pos_deltas;
 uniform float vifo_theta;
 
+uniform mat4 norm_mat;
+
+
 
 mat4 BuildTranslation(vec3 delta)
 {
@@ -36,7 +39,7 @@ mat3 rotate_translate(float theta, float dx, float dy) {
 }
 
 void main() {
-
+    norm_mat;
     a_normal;
 
     mat2 t_2 = r2d(vifo_theta);
