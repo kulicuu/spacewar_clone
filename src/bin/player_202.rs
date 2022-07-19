@@ -333,7 +333,7 @@ pub fn setup_prepare_player_draw
     gl.attach_shader(&shader_program, &frag_shader);
     gl.link_program(&shader_program);
     
-    // let time_loc = Arc::new(gl.get_uniform_location(&shader_program, "u_time").unwrap());
+    let time_loc = Arc::new(gl.get_uniform_location(&shader_program, "u_time").unwrap());
 
     let normals_buffer = Arc::new(gl.create_buffer().unwrap());
     let norms_js = Arc::new(js_sys::Float32Array::from(v200_vertex_normals.as_slice()));
@@ -358,9 +358,15 @@ pub fn setup_prepare_player_draw
     // let arr100 = mat_to_arr(*m100.lock().unwrap());
     // let m100_js = js_sys::Float32Array::from(arr100.as_slice());
     
+
+
+
     // active and inactive predicates of block uniforms found in mdn docs.
     // sync objects available in webgl2.
     // client_wait_sync
+
+
+
 
 
     let stuff_uniforms_location = Arc::new(gl.get_uniform_block_index(&shader_program, "Stuff"));
@@ -370,26 +376,28 @@ pub fn setup_prepare_player_draw
     let arced_stuff = Arc::new(stuff_uniform_buffer);
 
 
-    let normals_buffer = Arc::new(gl.create_buffer().unwrap());
-    let norms_js = Arc::new(js_sys::Float32Array::from(v200_vertex_normals.as_slice()));
-    let vertex_normals_position = Arc::new(gl.get_attrib_location(&shader_program, "a_normal") as i32); // This is now eplicitly 1.
+
 
     let vertex_buffer = Arc::new(gl.create_buffer().unwrap());
     // let js_vertices = Arc::new(js_sys::Float32Array::from(vehicle_100_vertices.as_slice()));
     let js_vertices = Arc::new(js_sys::Float32Array::from(vehicle_200_vertices.as_slice()));
-    let vertices_position = Arc::new(gl.get_attrib_location(&shader_program, "a_position") as i32);  // explicitly indexed now.  This is zero.
+    let vertices_position = Arc::new(gl.get_attrib_location(&shader_program, "a_position") as i32);
+
+    // let norm_mat_loc = Arc::new(gl.get_uniform_location(&shader_program, "norm_mat").unwrap());
+    // let pos_deltas_loc = Arc::new(gl.get_uniform_location(&shader_program, "pos_deltas").unwrap());
+    // let vifo_theta_loc =  Arc::new(gl.get_uniform_location(&shader_program, "vifo_theta").unwrap());
 
 
     gl.bind_buffer(GL::ARRAY_BUFFER, Some(&normals_buffer));
     gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &norms_js, GL::STATIC_DRAW);
-    gl.vertex_attrib_pointer_with_i32(1 as u32, 3, GL::FLOAT, false, 0, 0);
-    gl.enable_vertex_attrib_array(1 as u32);
+    gl.vertex_attrib_pointer_with_i32(*vertex_normals_position as u32, 3, GL::FLOAT, false, 0, 0);
+    gl.enable_vertex_attrib_array(*vertex_normals_position as u32);
     gl.bind_buffer(GL::ARRAY_BUFFER, None);
 
     gl.bind_buffer(GL::ARRAY_BUFFER, Some(&vertex_buffer));
     gl.buffer_data_with_array_buffer_view(GL::ARRAY_BUFFER, &js_vertices, GL::STATIC_DRAW);
-    gl.vertex_attrib_pointer_with_i32(0 as u32, 3, GL::FLOAT, false, 0, 0);
-    gl.enable_vertex_attrib_array(0 as u32);
+    gl.vertex_attrib_pointer_with_i32(*vertices_position as u32, 3, GL::FLOAT, false, 0, 0);
+    gl.enable_vertex_attrib_array(*vertices_position as u32);
     gl.bind_buffer(GL::ARRAY_BUFFER, None);
 
 
@@ -404,7 +412,7 @@ pub fn setup_prepare_player_draw
 
                 normals_buffer: normals_buffer,
                 norms_js: norms_js,
-                vertex_normals_position: vertex_normals_position, // explicitly 0
+                vertex_normals_position: vertex_normals_position,
 
                 norm_uniform_mat4: m100,
 

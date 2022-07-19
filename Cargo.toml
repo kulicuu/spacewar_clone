@@ -45,6 +45,9 @@ features = [
   'MessageEvent',
   'MouseEventInit',
   'Url',
+
+
+
   'WebGlTransformFeedback',
   'WebGlBuffer',
   'WebGlProgram',
@@ -52,6 +55,10 @@ features = [
   'WebGlShader',
   'WebGlUniformLocation',
   'WebGlVertexArrayObject',
+  'ExtDisjointTimerQuery',
+  
+  
+  
   'Window',
   'Worker',
 ]

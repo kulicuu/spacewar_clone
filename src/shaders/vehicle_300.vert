@@ -38,21 +38,23 @@ mat3 rotate_translate(float theta, float dx, float dy) {
 }
 
 void main() {
-    vifo_theta;
-    pos_deltas;
-    norm_mat;
+    // vifo_theta;
+    // pos_deltas;
+    // norm_mat;
 
-    a_position;
-    a_normal;
+    // a_position;
+    // a_normal;
 
     mat2 t_2 = r2d(vifo_theta);
     mat3 transform = rotate_translate(vifo_theta, pos_deltas[0], pos_deltas[1]);
     vec2 p_3 = t_2 * a_position.xy;
     vec4 mediate = vec4(p_3[0] + pos_deltas[0], p_3[1] + pos_deltas[1], a_position.z, 1.0);
-    vec3 translate_delta = vec3(0.0, 0.0, 0.5);
+    vec3 translate_delta = vec3(0.0, 0.0, 1.0);
     mat4 tr_mat = BuildTranslation(translate_delta);
     vec4 translated = mediate * tr_mat;
-    gl_Position = translated;
 
-    // gl_Position = vec4(0.0, 0.0, 0.0, 1.0);
+    vec4 t40 = translated * norm_mat;
+    gl_Position = t40;
+    // gl_Position = translated;
+
 }
