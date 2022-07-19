@@ -119,7 +119,8 @@ pub fn draw_player_one
     
     gl.bind_buffer_base(GL::UNIFORM_BUFFER, 0, Some(&player_draw_stuff.stuff_uniform_buffer.as_ref()));
     let req = gl.get_parameter(GL::UNIFORM_BUFFER_OFFSET_ALIGNMENT).unwrap();
-    log!("req uniform offsets: ", req);
+    // It's 256.
+    // log!("req uniform offsets: ", req);
     let arr_js = js_sys::Float32Array::from(arr.as_slice());
     gl.buffer_data_with_array_buffer_view(GL::UNIFORM_BUFFER, &arr_js, GL::STATIC_DRAW);
 

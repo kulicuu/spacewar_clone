@@ -53,8 +53,8 @@ void main() {
     mat4 tr_mat = BuildTranslation(translate_delta);
     vec4 translated = mediate * tr_mat;
 
-    vec4 t40 = translated * norm_mat;
-    gl_Position = t40;
-    // gl_Position = translated;
+    // vec4 t40 = translated * norm_mat;
+    // gl_Position = t40;
+    gl_Position = translated;
 
 }
